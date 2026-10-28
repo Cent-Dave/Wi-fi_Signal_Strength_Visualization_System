@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Measurements - Wi-Fi Signal Strength Visualization System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="appNavbar"></div>
+
+  <main class="main-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Wi-Fi Measurements</h1>
+        <p class="page-subtitle">View, edit, and manage your indoor Wi-Fi survey records</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <button id="clearAllBtn" class="btn btn-danger">
+          <i class="fa-solid fa-trash-can"></i>
+          <span>Clear All Measurements</span>
+        </button>
+        <a href="heatmap.html" class="btn btn-primary">
+          <i class="fa-solid fa-fire-flame-curved"></i>
+          <span>View on Heatmap</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Filters & Search Bar -->
+    <div class="card" style="padding: 1rem 1.5rem; margin-bottom: 1.25rem;">
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; flex: 1;">
+          <div class="form-input-group" style="max-width: 320px;">
+            <i class="fa-solid fa-magnifying-glass form-input-icon"></i>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search grid point (e.g. A1, B3)...">
+          </div>
+          <select id="statusFilter" class="form-control" style="max-width: 220px;">
+            <option value="ALL">All Signal Qualities</option>
+            <option value="Strong">Strong (-30 to -50 dBm)</option>
+            <option value="Good">Good (-51 to -60 dBm)</option>
+            <option value="Fair">Fair (-61 to -70 dBm)</option>
+            <option value="Weak">Weak (-71 to -80 dBm)</option>
+            <option value="Very Weak">Very Weak (&lt; -80 dBm)</option>
+          </select>
+        </div>
+        <div style="font-size: 0.88rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem;" id="recordCountLabel">
+          <i class="fa-solid fa-database" style="color: #38bdf8;"></i>
+          <span>Showing -- records</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Measurements Table -->
+    <div class="card">
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Grid Location</th>
+              <th>RSSI (dBm)</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Signal Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="measurementsTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Loading measurements...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Edit Measurement Modal -->
+  <div id="editModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-pen-to-square" style="color: #38bdf8;"></i>
+          <span>Edit Measurement Record</span>
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeEditModal()" style="border: none; font-size: 1.1rem;" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="editForm">
+        <div class="modal-body">
+          <input type="hidden" id="editMeasurementId">
+
+          <div class="form-group">
+            <label class="form-label" for="editGridPoint">Grid Location (A1–E5)</label>
+            <select id="editGridPoint" class="form-control" required>
+              <!-- A1 to E5 options generated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="editRssi">Signal Strength RSSI (dBm)</label>
+            <input type="number" id="editRssi" class="form-control" min="-120" max="0" required>
+            <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px; display: block;">
+              Standard Wi-Fi RSSI range: -30 dBm (strongest) to -95 dBm (dead zone)
+            </small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+          <button type="submit" id="saveEditBtn" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; font-weight: 600; color: #f87171; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Confirm Deletion</span>
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeDeleteModal()" style="border: none; font-size: 1.1rem;" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+          Are you sure you want to delete this measurement record?
+        </p>
+        <div id="deleteDetailsBox" style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-input); border-radius: 6px; font-size: 0.9rem; border: 1px solid var(--border-color);">
+          <!-- Dynamic details -->
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.75rem;">
+          The dynamic heatmap will be automatically updated once deleted.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear All Confirmation Modal -->
+  <div id="clearAllModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; font-weight: 600; color: #f87171; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Clear All Measurements</span>
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeClearAllModal()" style="border: none; font-size: 1.1rem;" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+          Are you sure you want to delete all recorded Wi-Fi measurements?
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.75rem;">
+          This will reset the entire 5&times;5 survey grid so you can begin a new heatmap survey session.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeClearAllModal()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+        <button type="button" id="confirmClearAllBtn" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> Yes, Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/measurements.js"></script>
+</body>
+</html>

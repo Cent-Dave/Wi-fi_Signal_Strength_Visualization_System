@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wi-Fi Signal Strength Visualization System</title>
+  <meta name="description" content="A complete final-year B.Sc. Computer Science project for indoor Wi-Fi signal strength visualization and network optimization.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="appNavbar"></div>
+
+  <main class="main-container" style="max-width: 960px; margin-top: 3rem;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+      <div style="width: 72px; height: 72px; margin: 0 auto 1.25rem auto; background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(6, 182, 212, 0.25)); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #38bdf8; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.35);">
+        <i class="fa-solid fa-wifi"></i>
+      </div>
+      <h1 class="page-title" style="font-size: 2.3rem; margin-bottom: 1rem; color: #f8fafc;">
+        Wi-Fi Signal Strength Visualization System
+      </h1>
+      <p style="font-size: 1.15rem; color: #94a3b8; max-width: 760px; margin: 0 auto; line-height: 1.6;">
+        An indoor Wi-Fi monitoring and network optimization platform designed for collecting, managing, and visualizing RSSI measurements over a structured indoor grid.
+      </p>
+      <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="login.html" class="btn btn-primary" style="padding: 0.75rem 1.75rem; font-size: 1rem;">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Log In to Dashboard</span>
+        </a>
+        <a href="register.html" class="btn btn-secondary" style="padding: 0.75rem 1.75rem; font-size: 1rem;">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Register New Account</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Academic & Architecture Overview -->
+    <div class="card" style="margin-bottom: 2rem;">
+      <h2 class="card-title" style="display: flex; align-items: center; gap: 0.6rem;">
+        <i class="fa-solid fa-network-wired" style="color: #38bdf8;"></i>
+        <span>Academic Project Architecture</span>
+      </h2>
+      <div style="background: #0b1120; padding: 1.25rem; border-radius: 8px; font-family: monospace; font-size: 0.92rem; color: #38bdf8; overflow-x: auto; line-height: 1.6; border: 1px solid #334155;">
+        Android Application (Native WifiManager RSSI)
+               ↓ [HTTP POST with Bearer JWT]
+        Node.js / Express Server (Authentication, Validation, Timestamping)
+               ↓ [Parameterized MySQL Queries]
+        MySQL Database (Users, Measurements, Reports)
+               ↑ [HTTP REST]
+        Web Application (Dashboard, Dynamic Heatmap.js, Reports)
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.92rem; color: #94a3b8; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-circle-info" style="color: #38bdf8;"></i>
+        <span><strong>Note:</strong> Android and Web clients communicate strictly through the middle-tier Node.js REST API. No mobile client connects directly to MySQL.</span>
+      </p>
+    </div>
+
+    <!-- Core Features Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+      <div class="card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.1rem; color: #38bdf8; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.55rem;">
+          <i class="fa-solid fa-mobile-screen-button"></i>
+          <span>Simple Android Mapper</span>
+        </h3>
+        <p style="font-size: 0.9rem; color: #94a3b8;">
+          Collects Wi-Fi RSSI automatically via native Android Wi-Fi APIs. The user selects a grid point (A1–E5) and presses <strong>MEASURE &amp; SAVE</strong> with zero manual RSSI or timestamp entry.
+        </p>
+      </div>
+
+      <div class="card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.1rem; color: #10b981; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.55rem;">
+          <i class="fa-solid fa-fire-flame-curved"></i>
+          <span>Dynamic Heatmap</span>
+        </h3>
+        <p style="font-size: 0.9rem; color: #94a3b8;">
+          Generates interactive Wi-Fi coverage heatmaps dynamically using Heatmap.js over an indoor grid. Normalizes negative RSSI values to clearly pinpoint strong areas and dead zones.
+        </p>
+      </div>
+
+      <div class="card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.1rem; color: #f59e0b; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.55rem;">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Optimization Reports</span>
+        </h3>
+        <p style="font-size: 0.9rem; color: #94a3b8;">
+          Computes statistical coverage metrics, average signal strength, dead-zone warnings, and practical Access Point placement tips, with instant print and PDF export.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <footer style="text-align: center; padding: 2rem; color: #64748b; font-size: 0.85rem; border-top: 1px solid #334155;">
+    Final Year B.Sc. Computer Science Project &bull; Wi-Fi Signal Strength Visualization System
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    renderNavbar('home');
+  </script>
+</body>
+</html>

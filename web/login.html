@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Wi-Fi Signal Strength Visualization System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="appNavbar"></div>
+
+  <div class="auth-page-container">
+    <!-- Ambient Gradient Glow Orbs -->
+    <div class="auth-glow-orb-1"></div>
+    <div class="auth-glow-orb-2"></div>
+
+    <div class="auth-wrapper">
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="auth-brand-pill">
+            <i class="fa-solid fa-wifi"></i>
+            <span>Wi-Fi Signal Mapper</span>
+          </div>
+          <div class="auth-icon-circle">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h1 class="auth-title">Welcome Back</h1>
+          <p class="auth-subtitle">
+            Sign in to access your indoor Wi-Fi signal surveys and dynamic heatmaps
+          </p>
+        </div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <div class="form-input-group">
+              <i class="fa-solid fa-envelope form-input-icon"></i>
+              <input type="email" id="email" class="form-control" placeholder="chukwuebuka@yahoo.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="form-input-group password-input-wrapper">
+              <i class="fa-solid fa-key form-input-icon"></i>
+              <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+              <button type="button" class="password-toggle-btn" id="togglePasswordBtn" aria-label="Show password" title="Show password">
+                <i class="fa-solid fa-eye eye-icon"></i>
+                <i class="fa-solid fa-eye-slash eye-off-icon" style="display: none;"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn-auth-submit">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            <span>Sign In to Dashboard</span>
+          </button>
+        </form>
+
+        <!-- Defense / Demonstration Demo Quick-Fill -->
+        <div class="demo-quickfill-box">
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.65rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+            <i class="fa-solid fa-graduation-cap" style="color: #38bdf8;"></i>
+            <span>Final Year Defense / Demonstration:</span>
+          </p>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickFillDemo()" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+            <i class="fa-solid fa-bolt" style="color: #facc15;"></i>
+            <span>Fill Demo Credentials</span>
+          </button>
+        </div>
+
+        <div class="auth-footer">
+          Don't have an account yet? <a href="register.html">Register an account</a>
+          <div>
+            <a href="index.html" class="auth-back-link">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Back to Homepage</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    renderNavbar('login');
+    redirectIfLoggedIn();
+    setupPasswordToggle();
+
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('loginSubmitBtn');
+
+    function quickFillDemo() {
+      document.getElementById('email').value = 'student@university.edu';
+      document.getElementById('password').value = 'Project2026!';
+      showToast('Demo credentials populated.', 'info');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Authenticating...</span>';
+
+      try {
+        const res = await apiRequest('/auth/login', {
+          method: 'POST',
+          body: { email, password }
+        });
+
+        if (res.success && res.token) {
+          setAuth(res.token, res.user);
+          showToast('Welcome back! Redirecting to Dashboard...', 'success');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 500);
+        } else {
+          showToast(res.message || 'Login failed. Please check credentials.', 'error');
+        }
+      } catch (err) {
+        showToast(err.message || 'Unable to connect to server.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign In to Dashboard</span>';
+      }
+    });
+  </script>
+</body>
+</html>

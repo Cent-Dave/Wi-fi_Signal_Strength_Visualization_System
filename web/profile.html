@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile - Wi-Fi Signal Strength Visualization System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="appNavbar"></div>
+
+  <main class="main-container" style="max-width: 780px;">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">User Account &amp; Profile</h1>
+        <p class="page-subtitle">Authenticated user credentials and system statistics</p>
+      </div>
+    </div>
+
+    <!-- Profile Details Card -->
+    <div class="card">
+      <div style="display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem;">
+        <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #ffffff; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
+          <i class="fa-solid fa-user-graduate"></i>
+        </div>
+        <div>
+          <h2 id="profileUsername" style="font-size: 1.4rem; font-weight: 700;">--</h2>
+          <span id="profileEmail" style="color: var(--text-secondary); font-size: 0.92rem;">--</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-id-card" style="color: #38bdf8;"></i>
+            <span>User ID</span>
+          </div>
+          <div id="profileUserId" style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 4px;">#--</div>
+        </div>
+
+        <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-calendar-check" style="color: #60a5fa;"></i>
+            <span>Joined Date</span>
+          </div>
+          <div id="profileJoined" style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 4px;">--</div>
+        </div>
+
+        <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-tower-broadcast" style="color: var(--status-strong);"></i>
+            <span>Measurements</span>
+          </div>
+          <div id="profileMeasurementsCount" style="font-size: 1.1rem; font-weight: 700; color: var(--status-strong); margin-top: 4px;">0</div>
+        </div>
+
+        <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-file-lines" style="color: var(--accent-blue);"></i>
+            <span>Generated Reports</span>
+          </div>
+          <div id="profileReportsCount" style="font-size: 1.1rem; font-weight: 700; color: var(--accent-blue); margin-top: 4px;">0</div>
+        </div>
+      </div>
+
+      <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--status-strong); padding: 1rem; border-radius: 6px; font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.6rem;">
+        <i class="fa-solid fa-shield-halved" style="color: var(--status-strong); font-size: 1.1rem; margin-top: 2px;"></i>
+        <div>
+          <strong>Data Isolation Verified:</strong> Your Wi-Fi signal measurements and generated optimization reports are strictly private. Other registered users cannot access, modify, or view your survey data.
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+        <button class="btn btn-secondary" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      requireAuth();
+      renderNavbar('profile');
+
+      try {
+        const res = await apiRequest('/auth/profile');
+        const user = res.user;
+
+        document.getElementById('profileUsername').textContent = user.username;
+        document.getElementById('profileEmail').textContent = user.email;
+        document.getElementById('profileUserId').textContent = `#USR-${user.userId}`;
+        document.getElementById('profileJoined').textContent = user.createdAt ? user.createdAt.split('T')[0] : 'N/A';
+        document.getElementById('profileMeasurementsCount').textContent = user.totalMeasurements || 0;
+        document.getElementById('profileReportsCount').textContent = user.totalReports || 0;
+      } catch (err) {
+        showToast('Failed to load profile details.', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

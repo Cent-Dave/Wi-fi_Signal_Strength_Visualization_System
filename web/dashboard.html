@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Wi-Fi Signal Strength Visualization System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="appNavbar"></div>
+
+  <main class="main-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Network Survey Dashboard</h1>
+        <p class="page-subtitle">Real-time overview of your indoor Wi-Fi signal measurements</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="heatmap.html" class="btn btn-primary">
+          <i class="fa-solid fa-fire-flame-curved"></i>
+          <span>Open Heatmap</span>
+        </a>
+        <a href="reports.html" class="btn btn-secondary">
+          <i class="fa-solid fa-file-lines"></i>
+          <span>Reports</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stat Cards Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title"><i class="fa-solid fa-database" style="color: #38bdf8; margin-right: 5px;"></i> Total Measurements</div>
+        <div class="stat-value" id="statTotalCount">--</div>
+        <div class="stat-desc">Points surveyed across grid</div>
+      </div>
+
+      <div class="stat-card" id="statAvgCard">
+        <div class="stat-title"><i class="fa-solid fa-signal" style="color: #60a5fa; margin-right: 5px;"></i> Average RSSI</div>
+        <div class="stat-value" id="statAvgRssi">-- dBm</div>
+        <div class="stat-desc" id="statAvgStatus">Signal Quality: --</div>
+      </div>
+
+      <div class="stat-card card-strong">
+        <div class="stat-title"><i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 5px;"></i> Optimal Coverage</div>
+        <div class="stat-value" id="statBestPoint">--</div>
+        <div class="stat-desc" id="statBestRssi">Peak signal location</div>
+      </div>
+
+      <div class="stat-card card-veryweak">
+        <div class="stat-title"><i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; margin-right: 5px;"></i> Critical / Weak Zone</div>
+        <div class="stat-value" id="statWeakPoint">--</div>
+        <div class="stat-desc" id="statWeakRssi">Lowest signal location</div>
+      </div>
+    </div>
+
+    <!-- Quick Navigation / Workflow Banner -->
+    <div class="card" style="background: linear-gradient(135deg, #1e293b, #0f172a); border-left: 4px solid var(--accent-blue);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-mobile-screen-button" style="color: #38bdf8;"></i>
+            <span>Android Measurement Workflow</span>
+          </h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); max-width: 700px;">
+            To capture new data points, open the Android application, select an indoor grid location (A1 to E5), and tap <strong>MEASURE &amp; SAVE</strong>. The reading, date, and time will sync here automatically.
+          </p>
+        </div>
+        <a href="measurements.html" class="btn btn-secondary btn-sm">
+          <span>Manage Records</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Measurements Table Card -->
+    <div class="card">
+      <div class="card-title">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-clock-rotate-left" style="color: #38bdf8;"></i>
+          <span>Recent Measurement Records</span>
+        </span>
+        <a href="measurements.html" style="font-size: 0.88rem; color: var(--accent-blue); text-decoration: none; display: flex; align-items: center; gap: 0.35rem;">
+          <span>View All Measurements</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Grid Location</th>
+              <th>RSSI (dBm)</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Signal Status</th>
+            </tr>
+          </thead>
+          <tbody id="recentMeasurementsTableBody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Loading measurement records...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

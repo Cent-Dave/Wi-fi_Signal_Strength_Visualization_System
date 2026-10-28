@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heatmap - Wi-Fi Signal Strength Visualization System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="appNavbar"></div>
+
+  <main class="main-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Wi-Fi Signal Heatmap</h1>
+        <p class="page-subtitle">Dynamic signal intensity distribution across the indoor grid</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <button id="refreshHeatmapBtn" class="btn btn-secondary">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span>Refresh Heatmap</span>
+        </button>
+        <button id="clearHeatmapBtn" class="btn btn-danger">
+          <i class="fa-solid fa-trash-can"></i>
+          <span>Clear Heatmap</span>
+        </button>
+        <a href="reports.html" class="btn btn-primary">
+          <i class="fa-solid fa-file-circle-plus"></i>
+          <span>Generate Report</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Heatmap & Inspector Split Layout -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+      
+      <!-- Heatmap Display Card -->
+      <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1.5rem;">
+        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.4rem;">
+              <i class="fa-solid fa-border-all" style="color: #38bdf8;"></i>
+              <span>Indoor 5&times;5 Grid Layout</span>
+            </h3>
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Points A1 to E5</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.75rem; background: var(--bg-input); padding: 0.45rem 0.9rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <label for="opacitySlider" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap; display: flex; align-items: center; gap: 0.35rem;">
+              <i class="fa-solid fa-sliders"></i>
+              <span>Color Vibrancy:</span>
+            </label>
+            <input type="range" id="opacitySlider" min="50" max="100" value="95" style="width: 110px; accent-color: #10b981; cursor: pointer;" title="Adjust Heatmap Color Visibility">
+            <span id="opacityValText" style="font-size: 0.8rem; font-weight: 700; color: #10b981; min-width: 36px;">95%</span>
+          </div>
+        </div>
+
+        <div class="heatmap-canvas-container" id="heatmapContainer">
+          <!-- The Heatmap.js Canvas Target -->
+          <div id="heatmapCanvas"></div>
+
+          <!-- Interactive Grid Overlay -->
+          <div class="heatmap-grid-overlay" id="gridOverlay">
+            <!-- 25 cells (A1..E5) inserted by JS -->
+          </div>
+        </div>
+
+        <!-- Heatmap Color Legend -->
+        <div class="heatmap-legend">
+          <div class="legend-item">
+            <span class="legend-color" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+            <span style="font-weight: 600;">Strong (-30 to -50 dBm)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #84cc16; box-shadow: 0 0 8px #84cc16;"></span>
+            <span style="font-weight: 600;">Good (-51 to -60 dBm)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #eab308; box-shadow: 0 0 8px #eab308;"></span>
+            <span style="font-weight: 600;">Fair (-61 to -70 dBm)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #f97316; box-shadow: 0 0 8px #f97316;"></span>
+            <span style="font-weight: 600;">Weak (-71 to -80 dBm)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></span>
+            <span style="font-weight: 600;">Very Weak (&lt; -80 dBm)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid Cell Inspector & Analysis -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <!-- Selected Point Inspector -->
+        <div class="card" style="margin-bottom: 0;">
+          <h3 class="card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-location-crosshairs" style="color: #38bdf8;"></i>
+            <span>Grid Point Inspector</span>
+          </h3>
+          <div id="inspectorContent">
+            <div style="text-align: center; color: var(--text-muted); padding: 1.5rem 0;">
+              Click or tap any grid cell (A1–E5) to inspect its signal metrics
+            </div>
+          </div>
+        </div>
+
+        <!-- Coverage Health & Optimization Advice -->
+        <div class="card" style="margin-bottom: 0; flex: 1;">
+          <h3 class="card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-chart-line" style="color: #10b981;"></i>
+            <span>Coverage Health &amp; Insights</span>
+          </h3>
+          <div id="heatmapInsights">
+            <div style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+              <p style="margin-bottom: 0.75rem;" id="coverageMetricsText">Calculating coverage statistics...</p>
+              <div id="deadZonesAlert"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Clear Heatmap Confirmation Modal -->
+  <div id="clearHeatmapModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 460px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; font-weight: 600; color: #f87171; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Clear Heatmap</span>
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeClearModal()" style="border: none; font-size: 1.1rem;" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-primary); font-size: 0.98rem; font-weight: 600; margin-bottom: 0.5rem;">
+          Are you sure you want to clear this heatmap?
+        </p>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+          This will delete all current grid measurements for your account so you can start a fresh survey session and generate a new heatmap.
+        </p>
+        <div style="margin-top: 1rem; padding: 0.85rem; background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent-blue); border-radius: 4px; font-size: 0.84rem; color: var(--text-secondary);">
+          <strong style="color: #38bdf8; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem;">
+            <i class="fa-solid fa-circle-info"></i> Tip:
+          </strong>
+          If you need to preserve the insights from this survey, remember to <strong>Generate a Report</strong> first before clearing.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeClearModal()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+        <button type="button" id="confirmClearBtn" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> Yes, Clear Heatmap</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/heatmap.min.js"></script>
+  <script src="js/heatmap.js"></script>
+</body>
+</html>

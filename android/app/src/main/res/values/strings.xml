@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Wi-Fi Signal Mapper</string>
+    <string name="title_measure">Wi-Fi Signal Mapper</string>
+    <string name="label_wifi_network">Connected Wi-Fi Network</string>
+    <string name="label_grid_location">Indoor Grid Location (A1–E5)</string>
+    <string name="label_signal_strength">Detected Signal Strength</string>
+    <string name="btn_measure_save">MEASURE &amp; SAVE</string>
+    <string name="status_ready">Ready to collect measurement.</string>
+</resources>
