@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_card">#1e293b</color>
+    <color name="bg_main">#0f172a</color>
+    <color name="border_color">#334155</color>
+    <color name="colorAccent">#3b82f6</color>
+    <color name="colorPrimary">#2563eb</color>
+    <color name="colorPrimaryDark">#1d4ed8</color>
+    <color name="status_fair">#eab308</color>
+    <color name="status_good">#84cc16</color>
+    <color name="status_strong">#10b981</color>
+    <color name="status_veryweak">#ef4444</color>
+    <color name="status_weak">#f97316</color>
+    <color name="text_primary">#f8fafc</color>
+    <color name="text_secondary">#94a3b8</color>
+    <string name="app_name">Wi-Fi Signal Mapper</string>
+    <string name="btn_measure_save">MEASURE &amp; SAVE</string>
+    <string name="label_grid_location">Indoor Grid Location (A1–E5)</string>
+    <string name="label_signal_strength">Detected Signal Strength</string>
+    <string name="label_wifi_network">Connected Wi-Fi Network</string>
+    <string name="status_ready">Ready to collect measurement.</string>
+    <string name="title_measure">Wi-Fi Signal Mapper</string>
+    <style name="Theme.WiFiSignalMapper" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/bg_main</item>
+    </style>
+</resources>
